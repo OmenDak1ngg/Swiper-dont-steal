@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 
 public class DoorOpenerTrigger : MonoBehaviour
 {
@@ -6,10 +7,13 @@ public class DoorOpenerTrigger : MonoBehaviour
 
     private bool _hasOpener = false;
 
+    public event Action IsThiefInside;
+
     private void OnTriggerEnter(Collider collider)
     {
         if(collider.TryGetComponent<Movement>(out _))
         {
+            IsThiefInside?.Invoke();
             _hasOpener = true;
         }
     }
@@ -18,6 +22,7 @@ public class DoorOpenerTrigger : MonoBehaviour
     {
         if (collider.TryGetComponent<Movement>(out _))
         {
+            IsThiefInside?.Invoke();
             _hasOpener = false;
         }
     }

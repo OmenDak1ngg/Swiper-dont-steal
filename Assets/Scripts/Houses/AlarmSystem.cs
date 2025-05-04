@@ -5,32 +5,37 @@ public class AlarmSystem : MonoBehaviour
 {
     [SerializeField] private AudioSource _audioSource;
     [SerializeField, Range(0.001f, 0.5f)] private float _volumeStep;
-    [SerializeField, Range(0.001f, 2f)] private float _volumeFadeInterval;
     [SerializeField] private DoorOpenerTrigger _doorOpener;
 
-    private WaitForSeconds _volumeChangeDelay;
     private float _maxVolume = 1.0f;
     private float _minVolume = 0f;
     private bool _isThiefInside;
+    private Coroutine _activeCoroutine;
 
     private void Awake()
     {
-        _volumeChangeDelay = new WaitForSeconds(_volumeFadeInterval);
         _audioSource.volume = 0f;
-        _doorOpener.IsThiefInside += ChangeAlarmState;
     }
 
-    private void OnDestroy()
+    private void OnEnable()
     {
-        _doorOpener.IsThiefInside -= ChangeAlarmState;
+        _doorOpener.ThiefDetected += ChangeAlarmState;
+    }
+
+    private void OnDisable()
+    {
+        _doorOpener.ThiefDetected -= ChangeAlarmState;
     }
 
     private void ChangeAlarmState()
     {
-        StartCoroutine(FadeVolume());
+        if(_activeCoroutine != null) 
+            StopCoroutine(_activeCoroutine);
+
+        _activeCoroutine = StartCoroutine(ChangeAlarmVolume());
     }
 
-    private IEnumerator FadeVolume() 
+    private IEnumerator ChangeAlarmVolume()
     {
         if (_isThiefInside)
         {
@@ -39,7 +44,7 @@ public class AlarmSystem : MonoBehaviour
             while (_audioSource.volume > _minVolume && _isThiefInside == false)
             {
                 _audioSource.volume -= _volumeStep;
-                yield return _volumeChangeDelay;
+                yield return null;
             }
 
             _audioSource.Stop();
@@ -51,7 +56,7 @@ public class AlarmSystem : MonoBehaviour
 
             while (_isThiefInside && _audioSource.volume < _maxVolume)
             {
-                yield return _volumeChangeDelay;
+                yield return null;
                 _audioSource.volume += _volumeStep;
             }
         }

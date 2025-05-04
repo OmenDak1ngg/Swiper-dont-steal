@@ -4,15 +4,17 @@ public class Door : MonoBehaviour
 {
     private readonly int IsOpen = Animator.StringToHash("IsOpen");
 
+    [SerializeField] private DoorOpenerTrigger _doorOpener;
     [SerializeField] private Animator _animator;
 
-    public  void Close()
+
+    private void OnEnable()
     {
-        _animator.SetBool(IsOpen, false);
+        _doorOpener.DetectedSomeone += ToggleDoor;
     }
 
-    public void Open()
+    public void ToggleDoor(bool doorState)
     {
-        _animator.SetBool(IsOpen, true);
+        _animator.SetBool(IsOpen, doorState);
     }
 }

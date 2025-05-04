@@ -3,18 +3,15 @@ using System;
 
 public class DoorOpenerTrigger : MonoBehaviour
 {
-    [SerializeField] private Door _door;
-
-    private bool _hasOpener = false;
-
-    public event Action IsThiefInside;
+    public event Action ThiefDetected;
+    public event Action<bool> DetectedSomeone;
 
     private void OnTriggerEnter(Collider collider)
     {
-        if(collider.TryGetComponent<Movement>(out _))
+        if (collider.TryGetComponent<Movement>(out _))
         {
-            IsThiefInside?.Invoke();
-            _hasOpener = true;
+            DetectedSomeone?.Invoke(true);
+            ThiefDetected?.Invoke();
         }
     }
 
@@ -22,17 +19,9 @@ public class DoorOpenerTrigger : MonoBehaviour
     {
         if (collider.TryGetComponent<Movement>(out _))
         {
-            IsThiefInside?.Invoke();
-            _hasOpener = false;
+            DetectedSomeone?.Invoke(false);
+            ThiefDetected?.Invoke();
         }
-    }
-
-    private void Update()
-    {
-        if(_hasOpener) 
-            _door.Open();
-        else
-            _door.Close();
     }
 }
 

@@ -286,6 +286,7 @@ MonoBehaviour:
   _audioSource: {fileID: 179401352}
   _volumeStep: 0.001
   _volumeFadeInterval: 0.001
+  _doorOpener: {fileID: 1098163398}
 --- !u!4 &248586628 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7141927108607896883, guid: 163099117d8b97a4bb83120a495b01f9, type: 3}
@@ -665,8 +666,8 @@ Transform:
   m_GameObject: {fileID: 1098163395}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.67, y: 1.423, z: 0}
-  m_LocalScale: {x: 6.38, y: 2.42, z: 3.65}
+  m_LocalPosition: {x: 1.67, y: 1.423, z: 0}
+  m_LocalScale: {x: 6.93, y: 2.42, z: 3.65}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 248586628}

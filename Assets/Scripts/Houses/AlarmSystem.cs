@@ -9,7 +9,8 @@ public class AlarmSystem : MonoBehaviour
 
     private float _maxVolume = 1.0f;
     private float _minVolume = 0f;
-    private bool _isThiefInside;
+    private float _targetVolume;
+    private bool _isThiefInside = false;
     private Coroutine _activeCoroutine;
 
     private void Awake()
@@ -29,7 +30,7 @@ public class AlarmSystem : MonoBehaviour
 
     private void ChangeAlarmState()
     {
-        if(_activeCoroutine != null) 
+        if (_activeCoroutine != null)
             StopCoroutine(_activeCoroutine);
 
         _activeCoroutine = StartCoroutine(ChangeAlarmVolume());
@@ -40,25 +41,23 @@ public class AlarmSystem : MonoBehaviour
         if (_isThiefInside)
         {
             _isThiefInside = false;
-
-            while (_audioSource.volume > _minVolume && _isThiefInside == false)
-            {
-                _audioSource.volume -= _volumeStep;
-                yield return null;
-            }
-
-            _audioSource.Stop();
+            _targetVolume = _minVolume;
         }
         else
         {
             _audioSource.Play();
-            _isThiefInside = true;
 
-            while (_isThiefInside && _audioSource.volume < _maxVolume)
-            {
-                yield return null;
-                _audioSource.volume += _volumeStep;
-            }
+            _isThiefInside = true;
+            _targetVolume = _maxVolume;
         }
+
+        while(_audioSource.volume != _targetVolume)
+        {
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, _targetVolume, _volumeStep);
+            yield return null;
+        }
+
+        if (_isThiefInside == false)
+            _audioSource.Stop();
     }
 }

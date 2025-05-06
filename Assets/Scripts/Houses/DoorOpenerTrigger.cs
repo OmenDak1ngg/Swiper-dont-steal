@@ -3,24 +3,22 @@ using System;
 
 public class DoorOpenerTrigger : MonoBehaviour
 {
-    public event Action ThiefDetected;
-    public event Action<bool> DetectedSomeone;
+    public event Action Exited;
+    public event Action Entered;
 
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider.TryGetComponent<Movement>(out _))
+        if (collider.TryGetComponent<Mover>(out _))
         {
-            DetectedSomeone?.Invoke(true);
-            ThiefDetected?.Invoke();
+            Entered?.Invoke();
         }
     }
 
     private void OnTriggerExit(Collider collider)
     {
-        if (collider.TryGetComponent<Movement>(out _))
+        if (collider.TryGetComponent<Mover>(out _))
         {
-            DetectedSomeone?.Invoke(false);
-            ThiefDetected?.Invoke();
+            Exited?.Invoke();
         }
     }
 }

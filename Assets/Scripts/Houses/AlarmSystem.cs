@@ -9,55 +9,57 @@ public class AlarmSystem : MonoBehaviour
 
     private float _maxVolume = 1.0f;
     private float _minVolume = 0f;
-    private float _targetVolume;
-    private bool _isThiefInside = false;
-    private Coroutine _activeCoroutine;
+    private int _countOfThiefes;
 
     private void Awake()
     {
-        _audioSource.volume = 0f;
+        _audioSource.volume = 0f;   
     }
 
     private void OnEnable()
     {
-        _doorOpener.ThiefDetected += ChangeAlarmState;
+        _doorOpener.Exited += StopAlarm;
+        _doorOpener.Entered += StartAlarm;
     }
 
     private void OnDisable()
     {
-        _doorOpener.ThiefDetected -= ChangeAlarmState;
+        _doorOpener.Exited-= StopAlarm;
+        _doorOpener.Entered-= StartAlarm;
     }
 
-    private void ChangeAlarmState()
+    private void StartAlarm()
     {
-        if (_activeCoroutine != null)
-            StopCoroutine(_activeCoroutine);
+        _countOfThiefes++;
 
-        _activeCoroutine = StartCoroutine(ChangeAlarmVolume());
+        if (_countOfThiefes > 1)
+            return;
+
+        StartCoroutine(TransitionVolume(_maxVolume));
+        _audioSource.Play();
     }
 
-    private IEnumerator ChangeAlarmVolume()
+    private void StopAlarm()
     {
-        if (_isThiefInside)
-        {
-            _isThiefInside = false;
-            _targetVolume = _minVolume;
-        }
-        else
-        {
-            _audioSource.Play();
+        _countOfThiefes--;
 
-            _isThiefInside = true;
-            _targetVolume = _maxVolume;
-        }
+        if (_countOfThiefes != 0)
+            return;
 
-        while(_audioSource.volume != _targetVolume)
+        StartCoroutine(TransitionVolume(_minVolume));
+    }
+
+    private  IEnumerator TransitionVolume(float targetVolume)
+    {
+        while (_audioSource.volume != targetVolume)
         {
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, _targetVolume, _volumeStep);
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, targetVolume, _volumeStep);
             yield return null;
         }
 
-        if (_isThiefInside == false)
+        if(_audioSource.volume == _minVolume)
+        {
             _audioSource.Stop();
+        }
     }
 }

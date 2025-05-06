@@ -10,11 +10,23 @@ public class Door : MonoBehaviour
 
     private void OnEnable()
     {
-        _doorOpener.DetectedSomeone += ToggleDoor;
+        _doorOpener.Entered += OpenDoor;
+        _doorOpener.Exited += CloseDoor;
     }
 
-    public void ToggleDoor(bool doorState)
+    private void OnDisable()
     {
-        _animator.SetBool(IsOpen, doorState);
+        _doorOpener.Entered -= OpenDoor;
+        _doorOpener.Exited-= CloseDoor;
+    }
+
+    public void OpenDoor()
+    {
+        _animator.SetBool(IsOpen, true);
+    }
+
+    public void CloseDoor()
+    {
+        _animator.SetBool(IsOpen, false);
     }
 }
